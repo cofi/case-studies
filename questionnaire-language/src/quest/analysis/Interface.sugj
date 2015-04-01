@@ -13,7 +13,8 @@ public sugar Interface {
 
         ConditionalQuest : QuestExpr * Question * Question -> Question
     rules
-      extract-interface : Questionnaire(mods, idj, body) -> IQuestionaire(mods, idj, <extract-interface> body)
+      extract-interface : Questionnaire(mods, idj, body) -> ("quest", ifc)
+        where ifc := IQuestionaire(mods, idj, <extract-interface> body)
 
       extract-interface : QuestGroup(idj, body) -> IQuestGroup(idj, <extract-interface> body)
 
