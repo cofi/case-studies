@@ -7,6 +7,7 @@ import quest.lang.Transform;
 
 import quest.analysis.Naming;
 import quest.analysis.Typing;
+import quest.analysis.Interface;
 import quest.analysis.Determinism;
 
 public extension Language { }

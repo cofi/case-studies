@@ -1,0 +1,46 @@
+package quest.analysis;
+
+import quest.lang.Syntax;
+import quest.analysis.Typing;
+
+public sugar Interface {
+    signature
+      constructors
+        InterfaceQuestionaireQuestionaire : Modifiers * QuestId * Body -> InterfaceComponent
+        InterfaceQuestionaireQuestion : QuestType * QuestId -> InterfaceComponent
+        InterfaceQuestionaireLocalQuestion : QuestType * QuestId -> InterfaceComponent
+        InterfaceQuestionaireQuestionGroup : QuestId * Body -> InterfaceComponent
+        InterfaceQuestionaireConditionalQuestion : InterfaceQuestionaireQuestion * InterfaceQuestionaireQuestion -> InterfaceComponent
+        IValue : QuestType * QuestId -> InterfaceComponent
+
+        ConditionalQuest : QuestExpr * Question * Question -> Question
+        QuestionGroup : QuestId * List(Question) -> QuestionGroup
+    rules
+      extract-interface : Questionnaire(mods, idj, body) -> InterfaceQuestionaireQuestionaire(mods, idj, <extract-interface> body)
+
+      extract-interface : QuestionGroup(idj, body) -> InterfaceQuestionaireQuestionGroup(idj, <filter(extract-interface)> body)
+
+      extract-interface : q@Question(_, name, _) -> InterfaceQuestionaireQuestion(type, name)
+        where type := <retrieve-type> q
+      extract-interface : Question(type, name, _) -> InterfaceQuestionaireQuestion(type, name)
+      
+
+      extract-interface : v@DerivedValue(_, name, _) -> IValue(type, name)
+        where type := <retrieve-type> v
+      extract-interface : DerivedValue(type, name, _) -> IValue(type, name)
+
+      extract-interface : ConditionalQuest(_, _, _) -> []
+
+      // XXX: Maybe not part of interface
+      extract-interface: LocalQuest(exp) -> []
+
+      extract-interface: Some(x) -> <extract-interface> x
+      extract-interface: None() -> None()
+
+      extract-interface: QuestRef(_) -> []
+
+      extract-interface: QNil -> []
+      extract-interface: QCons(x, xs) -> <conc> (<ensure-list(extract-interface)> x, <extract-interface> xs)
+
+      ensure-list(s) = s < (is-list <+ ![<id>]) + ![]
+}
