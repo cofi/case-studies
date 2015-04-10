@@ -6,28 +6,27 @@ import quest.analysis.Typing;
 public sugar Interface {
     signature
       constructors
-        IQuestionaire : Modifiers * QuestId * Body -> InterfaceComponent
-        IQuestion : QuestType * QuestId -> InterfaceComponent
-        IQuestGroup : QuestId * Body -> InterfaceComponent
-        IValue : QuestType * QuestId -> InterfaceComponent
+        IQuestionaire : Modifiers * String * Body -> InterfaceComponent
+        IQuestion : String * String -> InterfaceComponent
+        IQuestGroup : String * Body -> InterfaceComponent
+        IValue : String * QuestId -> InterfaceComponent
 
         ConditionalQuest : QuestExpr * Question * Question -> Question
     rules
-      extract-interface : Questionnaire(mods, idj, body) -> ("quest", ifc)
+      extract-interface : Questionnaire(mods, Id(idj), body) -> ("quest", ifc)
         where ifc := IQuestionaire(mods, idj, <extract-interface> body)
 
-      extract-interface : QuestGroup(idj, body) -> IQuestGroup(idj, <extract-interface> body)
+      extract-interface : QuestGroup(QuestId(idj), body) -> IQuestGroup(idj, <extract-interface> body)
 
-      extract-interface : q@Question(_, name, _) -> IQuestion(type, name)
+      extract-interface : q@Question(_, QuestId(name), _) -> IQuestion(type, name)
         where type := <retrieve-type> q
-      extract-interface : Question(type, name, _) -> IQuestion(type, name)
 
-      extract-interface: LocalQuest(exp) -> <extract-interface> exp
+      extract-interface: q@LocalQuest(Question(_, QuestId(name), _)) -> IQuestion(type, name)
+        where type := <retrieve-type> q
 
-      extract-interface : v@DerivedValue(_, name, _) -> IValue(type, name)
-        where type := <retrieve-type> v
-      extract-interface : DerivedValue(type, name, _) -> IValue(type, name)
-
+      extract-interface : v@DerivedValue(_, QuestId(name), exp) -> IValue(type, name)
+        where type := <retrieve-type> exp
+      
       extract-interface : ConditionalQuest(_, _, _) -> []
       extract-interface: Some(x) -> <extract-interface> x
       extract-interface: None() -> None()
