@@ -48,4 +48,5 @@ public sugar Syntax {
     LocalQuest -> QuestElem {layout(1.first.col < 1.left.col)}
     "define" Question -> LocalQuest {cons("LocalQuest")}
     "ask" QuestId -> Question {cons("QuestRef")}
+    "ask" JavaId"."JavaId -> Question {cons("ExternalRef")}
 }

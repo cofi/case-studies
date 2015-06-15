@@ -28,6 +28,12 @@ public sugar Typing {
       ?QuestRef(QuestId(name));
       where(<get-ref-type> name => type);
       put-type(|type)
+    analyze-types =
+      ?ExternalRef(Id(mname), Id(name));
+      where(<get-ref-type> name => type);
+      put-type(|type)
+    analyze-types = debug(!"what's type ")
+
 
     get-ref-type = retrieve-reference; retrieve-type
 

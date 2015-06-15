@@ -18,7 +18,7 @@ public extension Naming {
     {| LocalQuest, ActiveQuest: analyze-names |}
   
   rules
-    analyze-names = Questionnaire(id, id, analyze-names)
+    analyze-names = ?Questionnaire(_,_,_); ?x; populate-names-from-interfaces ; !x; Questionnaire(id, id, analyze-names) ; debug(!"end naming")
     analyze-names = QNil
     analyze-names = QCons(analyze-names, analyze-names)
     
@@ -35,6 +35,14 @@ public extension Naming {
       if <LocalQuest> name => ref
         then where(<put-reference(|ref)> name)
         else where(<put-name-error(|"Could not resolve reference.")> name)
+      end;
+      new-active-name(|name)
+
+    analyze-names =
+      ?ExternalRef(Id(mname), Id(name));
+      if <LocalQuest> (mname, name) => ref
+        then where(<put-reference(|ref)> name)
+        else where(<put-name-error(|"Could not resolve external reference.")> name)
       end;
       new-active-name(|name)
 
@@ -71,4 +79,26 @@ public extension Naming {
 
   references
     reference _ : resolve-reference
+
+  // import support using interfaces
+  signature
+    constructors
+      IQuestionaire : Modifiers * String * Body -> InterfaceComponent
+      IQuestion : String * String -> InterfaceComponent
+      IQuestGroup : String * Body -> InterfaceComponent
+      IValue : String * QuestId -> InterfaceComponent
+  rules
+    imported-interfaces = prim("SUGARJ_imported_interfaces") ; debug(!"interfaces: ")
+
+  rules
+    populate-names-from-interfaces = ?old; imported-interfaces ; ?ifcs; <filter(populate-names-from-interface)> ifcs ; !old
+    populate-names-from-interface: (_, Interface(ifc)) -> <map(populate-names-from-interface)> ifc
+    populate-names-from-interface: ("quest", IQuestionaire(_, mname, ifc)) -> <map(names-from-interface(|mname))> ifc
+    populate-names-from-interface = debug(!"what's that? ")
+
+  rules
+    names-from-interface(|mname) = ?IQuestion(type, name); new-local-name(|(mname, name)); put-analysis-data(|"type", type)
+    names-from-interface(|mname) = ?IValue(type, name); new-local-name(|(mname, name)); put-analysis-data(|"type", type)
+    names-from-interface(|mname) = ?IQuestGroup(name, body); <filter(names-from-interface(|mname))> body
+    names-from-interface = debug(!"what's that? ")
 }

@@ -26,11 +26,13 @@ public sugar Interface {
 
       extract-interface : v@DerivedValue(_, QuestId(name), exp) -> IValue(type, name)
         where type := <retrieve-type> exp
+      extract-interface : v@DerivedValue(QuestType(type), QuestId(name), exp) -> IValue(type, name)
       
       extract-interface : ConditionalQuest(_, _, _) -> []
       extract-interface: Some(x) -> <extract-interface> x
       extract-interface: None() -> None()
       extract-interface: QuestRef(_) -> []
+      extract-interface: ExternalRef(_, _) -> []
 
       extract-interface: QNil -> []
       extract-interface: QCons(x, xs) -> <conc> (<ensure-list(extract-interface)> x, <extract-interface> xs)
