@@ -2,6 +2,8 @@ package test;
 
 import quest.Language;
 
+import test.MobileSecurityTest;
+
 public questionnaire HouseOwningTest
 
   Boolean question hasSoldHouse =
@@ -21,6 +23,8 @@ public questionnaire HouseOwningTest
 
   define Boolean question hasMoney =
     So you have some money?
+
+  ask MobileSecurityTest.securityRelevant
   
   if hasBoughtHouse && howMuchPaid < 50000
     ask hasMoney
