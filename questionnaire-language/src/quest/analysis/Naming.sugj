@@ -84,7 +84,7 @@ public extension Naming {
   signature
     constructors
       IQuestionaire : Modifiers * String * Body -> InterfaceComponent
-      IQuestion : String * String -> InterfaceComponent
+      IQuestion : String * String * String -> InterfaceComponent
       IQuestGroup : String * Body -> InterfaceComponent
       IValue : String * QuestId -> InterfaceComponent
   rules
@@ -97,7 +97,7 @@ public extension Naming {
     populate-names-from-interface = debug(!"what's that? ")
 
   rules
-    names-from-interface(|mname) = ?IQuestion(type, name); new-local-name(|(mname, name)); put-analysis-data(|"type", type)
+    names-from-interface(|mname) = ?IQuestion(type, name, text); new-local-name(|(mname, name)); put-analysis-data(|"type", type)
     names-from-interface(|mname) = ?IValue(type, name); new-local-name(|(mname, name)); put-analysis-data(|"type", type)
     names-from-interface(|mname) = ?IQuestGroup(name, body); <filter(names-from-interface(|mname))> body
     names-from-interface = debug(!"what's that? ")

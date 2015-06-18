@@ -7,7 +7,7 @@ public sugar Interface {
     signature
       constructors
         IQuestionaire : Modifiers * String * Body -> InterfaceComponent
-        IQuestion : String * String -> InterfaceComponent
+        IQuestion : String * String * String -> InterfaceComponent
         IQuestGroup : String * Body -> InterfaceComponent
         IValue : String * QuestId -> InterfaceComponent
 
@@ -18,10 +18,10 @@ public sugar Interface {
 
       extract-interface : QuestGroup(QuestId(idj), body) -> IQuestGroup(idj, <extract-interface> body)
 
-      extract-interface : q@Question(_, QuestId(name), _) -> IQuestion(type, name)
+      extract-interface : q@Question(_, QuestId(name), QuestText(text)) -> IQuestion(type, name, text)
         where type := <retrieve-type> q
 
-      extract-interface: q@LocalQuest(Question(_, QuestId(name), _)) -> IQuestion(type, name)
+      extract-interface: q@LocalQuest(Question(_, QuestId(name), QuestText(text))) -> IQuestion(type, name, text)
         where type := <retrieve-type> q
 
       extract-interface : v@DerivedValue(_, QuestId(name), exp) -> IValue(type, name)
