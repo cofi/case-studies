@@ -4,6 +4,7 @@ import concretesyntax.Java;
 
 import quest.lang.Syntax;
 import quest.analysis.Typing;
+import quest.analysis.Naming;
 
 import quest.lang.var.Variable;
 import quest.lang.var.VariableBooleanRadioButtons;
@@ -24,6 +25,7 @@ public extension Transform {
     desugar-conditional-group
     desugar-local-quest
     desugar-quest-ref
+    desugar-external-ref
 
   rules
     desugar-questionnaire :
@@ -207,6 +209,26 @@ public extension Transform {
       QCons(LocalQuest(_), rest) -> rest
     desugar-quest-ref :
       QuestRef(QuestId(name)) -> <retrieve-reference; ?LocalQuest(<id>)> name
+
+  rules    
+    desugar-external-ref :
+      ExternalRef(Id(mname), Id(name)) ->
+      java_bstm* |[
+        javax.swing.JPanel java_x_panel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        java_x_panel.add(new javax.swing.JLabel(~Lit(String([Chars(text)]))));
+        java_tclass_component java_x_component = new java_tclass_component(java_x);
+        java_x_component.setPreferredSize(new java.awt.Dimension(200, 30));
+        java_x_panel.add(java_x_component);
+        container.add(java_x_panel);
+      ]|
+    where
+      <conc-strings> (mname, "_", name) => java_x;
+      <get-ref-type> name => type;
+      <retrieve-reference; ?IQuestion(_, _, <id>)> name => text;
+      <component-type> type => java_tclass_component;
+      <newname> java_x => java_x_component;
+      <newname> "panel" => java_x_panel;
+      rules ( QuestVars := [(java_x,type) | <QuestVars <+ ![]>] )
 
   rules
     component-type : "Boolean" -> java_type |[ quest.lang.var.VariableCheckBox ]|
